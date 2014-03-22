@@ -1,0 +1,21 @@
+
+static:
+  #NOTE: Path can be relative to starting directory, or an absolute path
+  #        Only absolute paths are safe from changing CWD (current working directory) inside the Python threads
+  path: "../www"
+  #path: "/some/absolute/path/www"
+  
+http:
+  example-page:
+    title: "Some Script - Example Page"
+    template:
+      path: packages/simplest/templates/basic.html
+    
+    run:
+      - script: packages/simplest/scripts/www/somepage.py
+
+rpc:
+  example-rpc:
+    run:
+      - script: packages/simplest/scripts/rpc/somerpc.py
+
