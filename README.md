@@ -1,4 +1,5 @@
-== DropSTAR ==
+DropSTAR
+========
 
 Drop scripts, templates and RPC files anywhere on a system, and start up an HTTP server in front of them to handle requests from Python scripts.
 
