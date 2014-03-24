@@ -1,6 +1,6 @@
 # Packages can have many sites, they are labelled by their first key, in this case "example-site"
 example-site:
-  # HTTP port to listen on for all sites in this
+  # HTTP port to listen on for all sites in this package
   port: 8686
 
   # Sequence of site configurations, first will be the default for this port is HTTP Host Headers 
@@ -13,11 +13,7 @@ example-site:
       #   site encountered (in sequenced order) is used as the default site for this port.
       aliases: ["hostname.domain.com", "hostname"]
 
-      # Use this when running scripts, to make it easy to package them in directory structures 
-      #   with shorter config paths
-      script_path_prefix: "conf/simplest/scripts/"
-      
       #NOTE: Use "mount" and "mount rpc" values to set prefixes for URIs
       #mount: "/"
-      #mount rpc: "rpc"
+      #mount rpc: "rpc/"
 
