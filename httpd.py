@@ -274,6 +274,7 @@ class HTTPRequest(BaseHTTPServer.BaseHTTPRequestHandler):
   """HTTP Request handler."""
   
   def do_GET(self):
+    """Process HTTP GET request"""
     path = self.path
     
     #NOTE(g): urlparse is not good enough.  It can kill data payload in our
@@ -302,6 +303,7 @@ class HTTPRequest(BaseHTTPServer.BaseHTTPRequestHandler):
 
 
   def do_POST(self):
+    """Process HTTP POST request"""
     path = self.path
     
     (_, _, path, _, args, _) = urlparse.urlparse(path)
@@ -423,7 +425,22 @@ class HTTPRequest(BaseHTTPServer.BaseHTTPRequestHandler):
 
 
   def RenderRequest(self, path, headers, cookies, args):
-    log('Request!')
+    """Render this Request - Past GET/POST processing, down to business.
+    
+    Args:
+        path: string, uri
+        headers: dict (string/string), HTTP headers and their values
+        bookies: dict (string/string), HTTP cookies
+        args: dict (key is string, value is string), CGI key/values
+    
+    Returns: tuple: (output, content_type, response_code, redirect_url, write_cookies, write_headers)
+        - output: string (HTML or other content)
+        - content_type: HTTP/MIME content types
+        - response_code: integer, HTTP status code
+        - redirect_url: None or string, if string URL to redirect to (301)
+        - write_coookies: dict (string/string), new cookies to present to HTTP client
+        - write_headers: dict (string/string), output HTTP headers
+    """
     # Initialize result data
     output = ''
     content_type = 'text/html'
@@ -485,7 +502,7 @@ class HTTPRequest(BaseHTTPServer.BaseHTTPRequestHandler):
       else:
         static_file_path = None
       
-      log('http: %s  rpc: %s  static: %s' % (http_path, rpc_path, static_file_path))
+      #log('http: %s  rpc: %s  static: %s' % (http_path, rpc_path, static_file_path))
       
       output = None
       test_path = '/%s' % path
@@ -501,7 +518,7 @@ class HTTPRequest(BaseHTTPServer.BaseHTTPRequestHandler):
             #log('Found page: %s' % page)
             
             # If this page is not processed with a run_thread
-            log('Getting results procblock: "%s": %s' % (page_name, page.keys()))
+            #log('Getting results procblock: "%s": %s' % (page_name, page.keys()))
             pipe_data_input = dict(args)
             # Set render to true.  This is so pages dont get rendered unless we are specifically invoking them
             pipe_data_input['render'] = "True"
