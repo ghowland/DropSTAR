@@ -356,6 +356,7 @@ class HTTPRequest(BaseHTTPServer.BaseHTTPRequestHandler):
     write_cookies = {}
     write_headers = {}
     cookies = {}
+    headers = dict(self.headers)
     if self.headers.has_key("Cookie"):
       cookie = Cookie.SimpleCookie(self.headers["Cookie"])
       for name in cookie:
@@ -384,7 +385,7 @@ class HTTPRequest(BaseHTTPServer.BaseHTTPRequestHandler):
     # Render the request 
     try:
       (output, content_type, response_code, redirect_url, write_cookies,
-          write_headers) = self.RenderRequest(path, self.headers, cookies, args)
+          write_headers) = self.RenderRequest(path, headers, cookies, args)
     
     # On render failures, report the error as best we can
     except Exception, e:
