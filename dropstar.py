@@ -4,6 +4,9 @@
 dropSTAR: Drop Scripts, Templates and RPC
 
 Wraps HTTP handler to pass in state.  Simple and light.
+
+Copyright Geoff Howland, 2014.  MIT License.
+
 """
 
 import logging
