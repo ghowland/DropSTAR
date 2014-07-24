@@ -219,6 +219,10 @@ def UriParse(uri):
 
 
 
+class ThreadedHTTPServer(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
+  """Threaded version of BaseHTTPServer"""
+
+
 class HttpdThread(threading.Thread):
   """HTTP Listener Thread"""
 
@@ -242,7 +246,9 @@ class HttpdThread(threading.Thread):
     run function.
     """
     #TODO(g): Allow specifying the interface, for localhost only or flexibility
-    self.server = BaseHTTPServer.HTTPServer(('0.0.0.0', self.port), HTTPRequest)
+    #self.server = BaseHTTPServer.HTTPServer(('0.0.0.0', self.port), HTTPRequest)
+    self.server = ThreadedHTTPServer(('0.0.0.0', self.port), HTTPRequest)
+    
     self.fd_server = self.server.fileno()
     
     # Save the sites for this port, so the HTTPRequest handler can process
@@ -544,7 +550,7 @@ class HTTPRequest(BaseHTTPServer.BaseHTTPRequestHandler):
           rpc_mount = '%s%s' % (rpc_path, rpc_name)
           #log('Testing page: %s == %s' % (test_path, page_mount))
           if test_path == rpc_mount:
-            log('Found RPC Function: %s: Args: %s' % (rpc, args))
+            #log('Found RPC Function: %s: Args: %s' % (rpc, args))
             
             # If this page is not processed with a run_thread
             log('Getting results procblock: "%s": %s' % (rpc_name, rpc.keys()))
