@@ -42,7 +42,7 @@ import urllib
 import traceback
 import threading
 import select
-import jsonlib
+import json
 import logging
 
 
@@ -535,7 +535,27 @@ class HTTPRequest(BaseHTTPServer.BaseHTTPRequestHandler):
             request_state_input = {'headers':headers, 'cookies':cookies, 'path':path, 'args':args, 'host':host, 'port':port, 'protocol':'http', 'page':page_name, 'page_mount':page_mount, 'package':package}
             render_out = processing.Process(pipe_data_input, page, request_state_input, args, tag=None, cwd=None, env=None, block_parent=None)
             try:
-              output = render_out['template']
+              
+              print '\n\n\n\n\n\n'
+              for rend_key in render_out.keys():
+                print 'Render Out: %s %s' % (rend_key, type(rend_key))
+                if type(render_out[rend_key]) == dict:
+                  for rend_key2 in render_out[rend_key]:
+                    print 'Render Out: %s.%s %s' % (rend_key, rend_key2, type(render_out[rend_key]))
+                
+              
+              # If this is a template
+              if 'output' not in render_out['run']:
+                output = render_out['template']
+              
+              # Else, raw output
+              else:
+                output = str(render_out['run']['output'])
+              
+              # If we specificed a content-type, set it
+              if 'content-type' in render_out['run']:
+                content_type = render_out['run']['content-type']
+              
             except KeyError, e:
               #TODO(g): Why is this necessary?  It only started with "show" page
               output = render_out['run']['template']
@@ -569,7 +589,7 @@ class HTTPRequest(BaseHTTPServer.BaseHTTPRequestHandler):
             #print 'JSON result: %s' % run_output
             
             # Write in JSON format
-            json_result = jsonlib.write(run_output)
+            json_result = json.dumps(run_output, default=JsonHelper)
             
             # Get rid of trailing comma in result
             #TODO(g): Am I doing this wrong?  I dont know, it seems
@@ -625,3 +645,29 @@ class HTTPRequest(BaseHTTPServer.BaseHTTPRequestHandler):
       
       return (output, content_type, response_code, redirect_url, write_cookies,
               write_headers)
+
+
+def JsonHelper(obj):
+  """Default JSON serializer."""
+  import calendar, datetime, decimal
+
+  # Date Time
+  if isinstance(obj, datetime.datetime):
+    if obj.utcoffset() is not None:
+      obj = obj - obj.utcoffset()
+
+    millis = int(
+      calendar.timegm(obj.timetuple()) * 1000 +
+      obj.microsecond / 1000
+    )
+    return millis
+  
+  # Decimal
+  elif isinstance(obj, decimal.Decimal):
+    #TODO(g): Avoid this loss of precision
+    return float(obj)
+  
+  # Else, use a string representation
+  else:
+    return str(obj)
+

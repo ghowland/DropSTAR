@@ -53,18 +53,29 @@ def RenderPage(site, page, conf, apps, data, state):
   # Run the page run script block (page already has the 'run' block in it)
   log('Running script: %s  Path: %s' % (page, site['script_path_prefix']))
   run_output = runblock.RunScriptBlock(page, run_input, state, site['script_path_prefix'])
-  #print 'Run output: %s' % run_output
+  print '\n\n\n\n\n\n'
+  print 'Run output: %s' % run_output
   
-  # Get the template
-  template = GetTemplate(site, page, run_output)
+  # Templating
+  if 'output' not in run_output:
+    # Get the template
+    template = GetTemplate(site, page, run_output)
+    
+    # Format the template
+    template_output = FormatTemplate(template, run_output)
+    
+    # Add template to the output
+    output += str(template_output)
+    
+    #TODO(g): Deal with cookies and other crap we want to set from the run_output
   
-  # Format the template
-  template_output = FormatTemplate(template, run_output)
-  
-  # Add template to the output
-  output += str(template_output)
-  
-  #TODO(g): Deal with cookies and other crap we want to set from the run_output
+  # Direct output
+  else:
+    output = str(run_output['output'])
+    
+    # If we specified a content-type, set it into the headers
+    if 'content-type' in run_output:
+      state['headers']['content-type'] = run_output['content-type']
   
   return output
 
